@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \usepackage{cite}
 \usepackage{balance}
+\usepackage{float}
 
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
@@ -50,11 +51,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Definition:} The missingness of data has no relationship with any values in the dataset, whether observed or missing. It is entirely random.
 
-\medskip
-
 \noindent \textbf{Implication:} The remaining data is a statistically representative sample.
-
-\medskip
 
 \noindent \textbf{Real-World Example:} A lab sample is accidentally dropped and destroyed, or a printing error causes a survey page to be skipped.
 
@@ -62,23 +59,15 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Definition:} The missingness is systematic, but can be explained by other observed variables in the dataset. It is not dependent on the missing value itself.
 
-\medskip
-
 \noindent \textbf{Implication:} Statistical relationships exist that allow us to predict the missing values.
-
-\medskip
 
 \noindent \textbf{Real-World Example:} Older patients (an observed variable) are less likely to have a specific invasive test. The missing test result is related to age, not the result of the test.
 
 \subsubsection{Missing Not At Random (MNAR)}
 
-\noindent \textbf{Definition:} The missingness is directly related to the value that is missing. The absence of data is a signal in itself. This is the most dangerous scenario.
-
-\medskip
+\noindent \textbf{Definition:} The missingness is directly related to the value that is missing. The absence of data is a signal in itself. This is the most difficult scenario to handle.
 
 \noindent \textbf{Implication:} The observed data lacks the information needed to predict the missing values. Standard imputation will fail and produce biased results.
-
-\medskip
 
 \noindent \textbf{Real-World Example:} High-income earners refusing to disclose their salary (missingness is driven by the high salary) or heavy smokers hiding their smoking habits.
 
@@ -88,11 +77,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} The default for plenty of legacy systems. Involves removing an entire row (observation) if it has even a single missing value.
 
-\medskip
-
 \noindent \textbf{When to use:} It produces unbiased estimates only if the data is strictly MCAR.
-
-\medskip
 
 \noindent \textbf{Problems:} In high-dimensional datasets (many columns), this method fails catastrophically. For example, if you have 100 features with a 1\% chance of having a value being missing, statistically, we would discard most data from your dataset.
 
@@ -100,19 +85,13 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Instead of deleting the whole row, this method uses all available data for specific pairs of variables. It is often used to calculate correlation or covariance matrices.
 
-\medskip
-
 \noindent \textbf{Problems:} It creates structural mathematical vulnerabilities. This is due to different parts of the matrix being calculated using different sample sizes, the resulting covariance matrix is often not positive definite. This mathematical inconsistency causes fatal errors in machine learning algorithms that rely on matrix inversion or stable eigenspaces.
 
 \subsubsection{Column Deletion}
 
 \noindent \textbf{Method:} Removing an entire feature (column) rather than rows.
 
-\medskip
-
 \noindent \textbf{When to use:} Generally, this is only viable if a feature has extreme missingness (e.g., more than 40\% or 50\%) and low predictive power. And it should also not be used in MNAR.
-
-\medskip
 
 \noindent \textbf{Problems:} Risk of discarding ``latent signals'', especially in MNAR scenarios where the absence of the feature is a predictor in itself.
 
@@ -122,11 +101,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Replacing missing numerical values with the mean or median, and categorical values with the mode (the value that appears most frequently in a dataset) or a constant like ``Unknown''.
 
-\medskip
-
 \noindent \textbf{Appeal:} Extremely fast, computationally efficient, and scales effortlessly to massive datasets.
-
-\medskip
 
 \noindent \textbf{Problems:} It artificially compresses the mathematical variance of the dataset. By replacing diverse missing values with a single static number, distortion of relationships (covariance) between features happens, as well as artificially lowers standard errors. This gives a false sense of statistical confidence and leads to poor real-world generalization.
 
@@ -134,11 +109,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Common in time-series, finance and clinical trials. LOCF replaces missing value with the most recent observed historical value. Linear interpolation draws a straight line between two known temporal points to guess the missing middle.
 
-\medskip
-
 \noindent \textbf{Appeal:} Highly intuitive and easy to explain to non-technical stakeholders.
-
-\medskip
 
 \noindent \textbf{Problems:} Relies on the dangerous assumption that dynamic systems remain entirely static between observations. In volatile environments, this assumption is mathematically invalid and produces heavily biased estimates.
 
@@ -146,11 +117,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Using existing, complete variables to build a regression model that predicts and fills in the missing values.
 
-\medskip
-
 \noindent \textbf{Appeal:} Preserves the shape of the mathematical distribution much better than central tendency substitution and avoids outright data deletion.
-
-\medskip
 
 \noindent \textbf{Problems:} Adds absolutely no novel information to the dataset. Because the new value is a perfect mathematical function on the other columns, it artificially inflates multi-collinearity (variables being too highly correlated). This creates an illusion of highly predictive power that will inevitably collapse when tested on new unseen data.
 
@@ -160,11 +127,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Instance-based algorithm that finds the $k$ most mathematically similar complete records (neighbors) using distance metrics like Euclidean or Hamming distance. It then fills the missing gap with the mean, median or mode of those neighbors.
 
-\medskip
-
 \noindent \textbf{Advantage:} Empirical studies show it vastly outperforms simple deletion and substitution, preserving local data structures and boosting downstream model accuracy.
-
-\medskip
 
 \noindent \textbf{Problems:} It suffers from the ``curse of dimensionality'' (distance loses meaning as features increase) and is computationally exorbitant. This is due to the fact that it compares every single data point to every other data point, its time complexity scales quadratically ($O(n^2)$), making it too slow for massive datasets.
 
@@ -172,11 +135,7 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Uses tree-based algorithms (like Random Forests or XGBoost) to iteratively predict missing values across all features.
 
-\medskip
-
 \noindent \textbf{Advantage:} Natively handles complex, non-linear relationships and mixed data types (continuous and categorical) without extensive data scaling or strict distributional assumptions.
-
-\medskip
 
 \noindent \textbf{Problems:} Traditional methods like missForest are computationally heavy and require significant processing time. However, modern variants using chained forests (missRanger) or XGBoost (mixgb) process the same data in a fraction of the time, mitigating these problems.
 
@@ -184,23 +143,35 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Rooted in Bayesian statistics, MICE acknowledges that any single guess is inherently uncertain. Instead of one substituted value, it generates multiple simulated versions of the complete dataset, trains models on each independently and mathematically pools the results.
 
-\medskip
-
 \noindent \textbf{Advantage:} It is biostatistical ``gold standard'' for unbiased estimates under the MAR assumption because it quantifies imputation uncertainty.
 
-\medskip
-
 \noindent \textbf{Problems:} It is an engineering nightmare for production machine learning pipelines. Storing and processing multiple parallel datasets creates massive computational burdens and destroys the interpretability of standard models.
+
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.3}
+\caption{Comparison of Imputation Methods}
+\label{tab:comparison}
+\centering
+\begin{tabular}{|p{0.28\linewidth}|p{0.32\linewidth}|p{0.32\linewidth}|}
+\hline
+\textbf{Primary Mathematical Approach} & \textbf{Key Technical Advantages} & \textbf{Primary Limitations and Bottlenecks} \\
+\hline
+Statistical (Mean/Mode) & Computationally instantaneous ($O(n)$); trivial to deploy. & Compresses variance; distorts covariance; biased under MAR/MNAR. \\
+\hline
+k-Nearest Neighbors & Preserves local structures; highly effective for mixed data types. & Computationally exorbitant ($O(n^2)$); degrades in high dimensions. \\
+\hline
+Iterative Tree Ensembles (missForest) & Natively handles non-linearities and categorical data; robust to outliers. & Massive computational cost for standard versions; high memory use. \\
+\hline
+Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous under MAR. & Extremely difficult to deploy in production; complex model pooling. \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Deep Learning Approaches}
 
 \noindent As datasets grow massive, data scientists are turning to deep generative architectures like Variational Autoencoders, GANs, and specifically TabDDPM (Denoising Diffusion Probabilistic Models adapted for tabular data). Originally built for image generation, diffusion models systematically add Gaussian noise to a dataset until it is pure entropy, then train a neural network to reverse the process. TabDDPM does this directly on incomplete data matrices to learn the underlying distribution.
 
-\medskip
-
 \noindent \textbf{Advantage:} It is incredibly resilient under extreme missingness. In benchmarks with 40\% to 60\% missing data, it synthesized highly realistic distributions. Even in a catastrophic scenario where 80\% of the data was missing, TabDDPM (combined with SMOTE) allowed downstream models to achieve an astonishing F1-score of 0.9435.
-
-\medskip
 
 \noindent \textbf{Problems:} It carries massive operational burdens. Training these models requires immense GPU resources, lots of time and hyper complex parameter tuning. Making their use a complete pipe dream, unless sufficient funding, resources and time is allocated. Rapid prototyping is also impossible.
 
@@ -208,19 +179,11 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent Instead of computationally exhausting resources and attempts trying to perfectly reconstruct missing data, simply use algorithms that are engineered to natively ingest incomplete data.
 
-\medskip
-
 \noindent \textbf{Method:} Advanced gradient boosted decision trees (like XGBoost and LightGBM) use a strategy called Missing Incorporated in Attributes (MIA). When building a decision tree, the algorithm dynamically tests whether sending all missing values down the left or right branch yields the best reduction in the loss function.
-
-\medskip
 
 \noindent \textbf{Advantage:} It organically learns the predictive value of the missingness itself. A monumental benchmarking study (520,000 CPU hours) proved that this native handling systematically outperforms state-of-the-art imputation (like MICE or k-NN) in both accuracy and speed.
 
-\medskip
-
 \noindent \textbf{Why:} Real-world missing data is almost always informative (MNAR). Explicitly reconstructing missing values is frequently an unnecessary, computationally wasteful, and statistically suboptimal step for predictive modeling.
-
-\medskip
 
 \noindent \textbf{Problems:} Model-specific. Does not actually ``fill in'' the data if it needs complete table for reporting.
 
