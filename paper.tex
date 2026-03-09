@@ -18,18 +18,19 @@
 
 \begin{document}
 
-\title{Missing Data Handling in Machine Learning: A Critical Analysis of Imputation Methodologies}
+\title{Removing Missing Data vs Imputation}
 
 \author{Your Name
 \thanks{Manuscript submitted March 7, 2026.}}
 
-\markboth{Journal of \LaTeX\ Class Files,~Vol.~18, No.~9, September~2020}%
+\markboth{Introduction to Machine Learning, March 2026}%
 {Your Name: Missing Data Handling in Machine Learning}
 
 \maketitle
 
 \begin{abstract}
-% Summary of the work (write your abstract here)
+% Summary of the work
+Missing data represents a difficult challenge in real-world machine learning applications. When poorly handled, it can cause compromises in the resulting model's integrity and predictive performance. This paper provides a critical analysis of current missing data handling methodologies, categorizing them into statistical, algorithmic and native handling strategies.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -44,6 +45,8 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \section{Methodology}
 % Critical description of existing methodologies within the topic
+The methods for handling missing values are not one-size-fits-all. Each method has its own strengths and weaknesses as well as times where they could be used and those times where they should not. This section details and categorizes the types of missing data (based on why the data is missing) as well as mechanisms to handle the missing data, such as deletion strategies, traditional statistical imputation and more advanced modern generative deep learning.
+By making this thorough evaluation, through the lenses of computational complexity, statistical bias, we can establish a rigorous framework for comparing their efficacy in high-dimensional machine learning tasks.
 
 \subsection{Missing Data Mechanisms}
 
@@ -77,23 +80,23 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} The default for plenty of legacy systems. Involves removing an entire row (observation) if it has even a single missing value.
 
-\noindent \textbf{When to use:} It produces unbiased estimates only if the data is strictly MCAR.
+\noindent \textbf{Advantages:} It produces unbiased estimates only if the data is strictly MCAR.
 
-\noindent \textbf{Problems:} In high-dimensional datasets (many columns), this method fails catastrophically. For example, if you have 100 features with a 1\% chance of having a value being missing, statistically, we would discard most data from your dataset.
+\noindent \textbf{Limitations:} In high-dimensional datasets (many columns), this method fails catastrophically. For example, if you have 100 features with a 1\% chance of having a value being missing, statistically, we would discard most data from your dataset.
 
 \subsubsection{Pairwise Deletion (Available Case Analysis)}
 
 \noindent \textbf{Method:} Instead of deleting the whole row, this method uses all available data for specific pairs of variables. It is often used to calculate correlation or covariance matrices.
 
-\noindent \textbf{Problems:} It creates structural mathematical vulnerabilities. This is due to different parts of the matrix being calculated using different sample sizes, the resulting covariance matrix is often not positive definite. This mathematical inconsistency causes fatal errors in machine learning algorithms that rely on matrix inversion or stable eigenspaces.
+\noindent \textbf{Limitations:} It creates structural mathematical vulnerabilities. This is due to different parts of the matrix being calculated using different sample sizes, the resulting covariance matrix is often not positive definite. This mathematical inconsistency causes fatal errors in machine learning algorithms that rely on matrix inversion or stable eigenspaces.
 
 \subsubsection{Column Deletion}
 
 \noindent \textbf{Method:} Removing an entire feature (column) rather than rows.
 
-\noindent \textbf{When to use:} Generally, this is only viable if a feature has extreme missingness (e.g., more than 40\% or 50\%) and low predictive power. And it should also not be used in MNAR.
+\noindent \textbf{Advantages:} Generally, this is only viable if a feature has extreme missingness (e.g., more than 40\% or 50\%) and low predictive power. And it should also not be used in MNAR.
 
-\noindent \textbf{Problems:} Risk of discarding ``latent signals'', especially in MNAR scenarios where the absence of the feature is a predictor in itself.
+\noindent \textbf{Limitations:} Risk of discarding ``latent signals'', especially in MNAR scenarios where the absence of the feature is a predictor in itself.
 
 \subsection{Statistical Imputation Methods}
 
@@ -101,25 +104,25 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Replacing missing numerical values with the mean or median, and categorical values with the mode (the value that appears most frequently in a dataset) or a constant like ``Unknown''.
 
-\noindent \textbf{Appeal:} Extremely fast, computationally efficient, and scales effortlessly to massive datasets.
+\noindent \textbf{Advantages:} Extremely fast, computationally efficient, and scales effortlessly to massive datasets.
 
-\noindent \textbf{Problems:} It artificially compresses the mathematical variance of the dataset. By replacing diverse missing values with a single static number, distortion of relationships (covariance) between features happens, as well as artificially lowers standard errors. This gives a false sense of statistical confidence and leads to poor real-world generalization.
+\noindent \textbf{Limitations:} It artificially compresses the mathematical variance of the dataset. By replacing diverse missing values with a single static number, distortion of relationships (covariance) between features happens, as well as artificially lowers standard errors. This gives a false sense of statistical confidence and leads to poor real-world generalization.
 
 \subsubsection{Longitudinal Carry-Forward (LOCF and Interpolation)}
 
 \noindent \textbf{Method:} Common in time-series, finance and clinical trials. LOCF replaces missing value with the most recent observed historical value. Linear interpolation draws a straight line between two known temporal points to guess the missing middle.
 
-\noindent \textbf{Appeal:} Highly intuitive and easy to explain to non-technical stakeholders.
+\noindent \textbf{Advantages:} Highly intuitive and easy to explain to non-technical stakeholders.
 
-\noindent \textbf{Problems:} Relies on the dangerous assumption that dynamic systems remain entirely static between observations. In volatile environments, this assumption is mathematically invalid and produces heavily biased estimates.
+\noindent \textbf{Limitations:} Relies on the dangerous assumption that dynamic systems remain entirely static between observations. In volatile environments, this assumption is mathematically invalid and produces heavily biased estimates.
 
 \subsubsection{Regression-Based Imputation}
 
 \noindent \textbf{Method:} Using existing, complete variables to build a regression model that predicts and fills in the missing values.
 
-\noindent \textbf{Appeal:} Preserves the shape of the mathematical distribution much better than central tendency substitution and avoids outright data deletion.
+\noindent \textbf{Advantages:} Preserves the shape of the mathematical distribution much better than central tendency substitution and avoids outright data deletion.
 
-\noindent \textbf{Problems:} Adds absolutely no novel information to the dataset. Because the new value is a perfect mathematical function on the other columns, it artificially inflates multi-collinearity (variables being too highly correlated). This creates an illusion of highly predictive power that will inevitably collapse when tested on new unseen data.
+\noindent \textbf{Limitations:} Adds absolutely no novel information to the dataset. Because the new value is a perfect mathematical function on the other columns, it artificially inflates multi-collinearity (variables being too highly correlated). This creates an illusion of highly predictive power that will inevitably collapse when tested on new unseen data.
 
 \subsection{Algorithmic Imputation}
 
@@ -127,25 +130,27 @@ This paper critically analyzes the main methodologies for handling missing data,
 
 \noindent \textbf{Method:} Instance-based algorithm that finds the $k$ most mathematically similar complete records (neighbors) using distance metrics like Euclidean or Hamming distance. It then fills the missing gap with the mean, median or mode of those neighbors.
 
-\noindent \textbf{Advantage:} Empirical studies show it vastly outperforms simple deletion and substitution, preserving local data structures and boosting downstream model accuracy.
+\noindent \textbf{Advantages:} Empirical studies show it vastly outperforms simple deletion and substitution, preserving local data structures and boosting downstream model accuracy.
 
-\noindent \textbf{Problems:} It suffers from the ``curse of dimensionality'' (distance loses meaning as features increase) and is computationally exorbitant. This is due to the fact that it compares every single data point to every other data point, its time complexity scales quadratically ($O(n^2)$), making it too slow for massive datasets.
+\noindent \textbf{Limitations:} It suffers from the ``curse of dimensionality'' (distance loses meaning as features increase) and is computationally exorbitant. This is due to the fact that it compares every single data point to every other data point, its time complexity scales quadratically ($O(n^2)$), making it too slow for massive datasets.
 
 \subsubsection{Ensemble and Tree-Based Imputation (missForest and mixgb)}
 
 \noindent \textbf{Method:} Uses tree-based algorithms (like Random Forests or XGBoost) to iteratively predict missing values across all features.
 
-\noindent \textbf{Advantage:} Natively handles complex, non-linear relationships and mixed data types (continuous and categorical) without extensive data scaling or strict distributional assumptions.
+\noindent \textbf{Advantages:} Natively handles complex, non-linear relationships and mixed data types (continuous and categorical) without extensive data scaling or strict distributional assumptions.
 
-\noindent \textbf{Problems:} Traditional methods like missForest are computationally heavy and require significant processing time. However, modern variants using chained forests (missRanger) or XGBoost (mixgb) process the same data in a fraction of the time, mitigating these problems.
+\noindent \textbf{Limitations:} Traditional methods like missForest are computationally heavy and require significant processing time. However, modern variants using chained forests (missRanger) or XGBoost (mixgb) process the same data in a fraction of the time, mitigating these problems.
 
 \subsubsection{Multiple Imputation by Chained Equations (MICE)}
 
 \noindent \textbf{Method:} Rooted in Bayesian statistics, MICE acknowledges that any single guess is inherently uncertain. Instead of one substituted value, it generates multiple simulated versions of the complete dataset, trains models on each independently and mathematically pools the results.
 
-\noindent \textbf{Advantage:} It is biostatistical ``gold standard'' for unbiased estimates under the MAR assumption because it quantifies imputation uncertainty.
+\noindent \textbf{Advantages:} It is biostatistical ``gold standard'' for unbiased estimates under the MAR assumption because it quantifies imputation uncertainty.
 
-\noindent \textbf{Problems:} It is an engineering nightmare for production machine learning pipelines. Storing and processing multiple parallel datasets creates massive computational burdens and destroys the interpretability of standard models.
+\noindent \textbf{Limitations:} It is an engineering nightmare for production machine learning pipelines. Storing and processing multiple parallel datasets creates massive computational burdens and destroys the interpretability of standard models.
+
+\subsection{Comparison of Imputation Methods}
 
 \begin{table}[H]
 \renewcommand{\arraystretch}{1.3}
@@ -171,9 +176,9 @@ Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous unde
 
 \noindent As datasets grow massive, data scientists are turning to deep generative architectures like Variational Autoencoders, GANs, and specifically TabDDPM (Denoising Diffusion Probabilistic Models adapted for tabular data). Originally built for image generation, diffusion models systematically add Gaussian noise to a dataset until it is pure entropy, then train a neural network to reverse the process. TabDDPM does this directly on incomplete data matrices to learn the underlying distribution.
 
-\noindent \textbf{Advantage:} It is incredibly resilient under extreme missingness. In benchmarks with 40\% to 60\% missing data, it synthesized highly realistic distributions. Even in a catastrophic scenario where 80\% of the data was missing, TabDDPM (combined with SMOTE) allowed downstream models to achieve an astonishing F1-score of 0.9435.
+\noindent \textbf{Advantages:} It is incredibly resilient under extreme missingness. In benchmarks with 40\% to 60\% missing data, it synthesized highly realistic distributions. Even in a catastrophic scenario where 80\% of the data was missing, TabDDPM (combined with SMOTE) allowed downstream models to achieve an astonishing F1-score of 0.9435.
 
-\noindent \textbf{Problems:} It carries massive operational burdens. Training these models requires immense GPU resources, lots of time and hyper complex parameter tuning. Making their use a complete pipe dream, unless sufficient funding, resources and time is allocated. Rapid prototyping is also impossible.
+\noindent \textbf{Limitations:} It carries massive operational burdens. Training these models requires immense GPU resources, lots of time and hyper complex parameter tuning. Making their use a complete pipe dream, unless sufficient funding, resources and time is allocated. Rapid prototyping is also impossible.
 
 \subsection{Native Algorithmic Handling of Missing Data}
 
@@ -181,11 +186,11 @@ Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous unde
 
 \noindent \textbf{Method:} Advanced gradient boosted decision trees (like XGBoost and LightGBM) use a strategy called Missing Incorporated in Attributes (MIA). When building a decision tree, the algorithm dynamically tests whether sending all missing values down the left or right branch yields the best reduction in the loss function.
 
-\noindent \textbf{Advantage:} It organically learns the predictive value of the missingness itself. A monumental benchmarking study (520,000 CPU hours) proved that this native handling systematically outperforms state-of-the-art imputation (like MICE or k-NN) in both accuracy and speed.
+\noindent \textbf{Advantages:} It organically learns the predictive value of the missingness itself. A monumental benchmarking study (520,000 CPU hours) proved that this native handling systematically outperforms state-of-the-art imputation (like MICE or k-NN) in both accuracy and speed.
 
 \noindent \textbf{Why:} Real-world missing data is almost always informative (MNAR). Explicitly reconstructing missing values is frequently an unnecessary, computationally wasteful, and statistically suboptimal step for predictive modeling.
 
-\noindent \textbf{Problems:} Model-specific. Does not actually ``fill in'' the data if it needs complete table for reporting.
+\noindent \textbf{Limitations:} Model-specific. Does not actually ``fill in'' the data if it needs complete table for reporting.
 
 
 \section{Discussion}
@@ -193,13 +198,34 @@ Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous unde
 % - Compare strengths and weaknesses of each approach
 % - Discuss trade-offs (accuracy vs. computational cost)
 % - Context-dependent recommendations
+Selection of a missing data handling strategy is, in essence, an exercise of balancing statistical rigor, computation feasibility, such as adapting to available computational resources, the intrinsic nature of the missingness (MCAR, MAR and MNAR) and a good understanding of the current problem and dataset, as it usually is the most important and decisive thing to consider. Unfortunately, no single methodology is universally superior and a one-size-fits-all solution, in fact, most of the methods act as a one-trick-pony, being outstanding solutions in very specific conditions, and being rather lacking in everything else.
 
+Traditional deletion and simple statistics based substitution methods, while simple and computationally efficient, are rarely justifiable in modern machine learning. This is due to the fact that most deletion strategies guarantee losses of statistical power, often catastrophically in high-dimensional datasets. Central tendency substitutions (based on means, medians and modes) artificially compress variance and distort feature relationships, leading to poorly generalizing models. As such, these legacy methods should be highly restricted to scenarios where missingness is strictly MCAR and is rather negligible fraction of the original dataset (bellow 5-10\% for example). With that said, there are occasions, where some of these legacy strategies can work rather well, for example, when handling IoT data, it does make sense to use Last Observation Carried Forward method, as it successfully handles this case, since high variations are not to be expected.
+
+Conversely, algorithmic imputation and deep learning models offer great improvements in the predictive accuracy, but come at a steep cost, being computational much more expensive. Methodologies such as k-NN and missForest effectively preserve local data structures and handle non-linear relationships much more cleanly, however, their computational complexity scales quadratically. In the same bag, we have MICE which is the gold standard for handling data in MAR assumptions, however, deploying it to production pipelines quickly reveals itself to be impractical due to its execution requirements.
+
+Even deeper learning approaches, such as TabDDPM, showcase the absolute, undisputed, state-of-the-art in terms of resilience, capable of synthesizing realistic distributions even when the vast majority of the data is missing. However, they heavily rely on an enormous quantity of GPU, resources and hyper tuning of parameters, making their use impossible, unless the work is done in a well-funded research environment.
+
+The most pragmatic and interesting paradigm shift in this analysis is the transition towards Native Algorithmic Handling. Modern gradient boosted trees utilizing Missing Incorporated in Attributes bypass the problem of perfect reconstruction entirely. By learning the predictive value of the missingness itself and acknowledging that real-world missing data is frequently informative (MNAR), these algorithms systematically outperform advanced imputation techniques in both speed (eliminating the computational overhead of imputing missing values) and accuracy.
+
+In sum, for production ML pipelines, the most important thing to do is understand the problem, and understand which are the methods that could better fix the problem. With that said, it might be possible to process data with simple algorithms, whether deletion or imputation methods, if it is, then great. If it isn't, then we need to consider using Native Algorithmic Handling, unless regulatory requirements demand complete datasets for interpretability or auditing. If traditional imputation is required, iterative tree ensembles (like missRanger or mixgb) offer the best compromise between computational speed and high-fidelity accuracy of complex algorithmic methods.
 
 \section{Critical Analysis}
 % Your critical opinion on the chosen topic based on the studied methodologies
 % - Personal reflection on acquired knowledge
 % - Synthesis of key findings
 % - Future directions or recommendations
+Before undertaking this research, I initially assumed that missing data was strictly an anomaly, a defect in the dataset that needed to be fixed, either by removing it from the dataset, or by filling in the missing value, before any meaningful machine learning could occur.
+
+While this statement is not entirely wrong, what I've come to realize is that missing values are not, necessarily, the absence of information, but rather information itself. This distinction between MCAR/MAR and MNAR shifts the problem from a simple data-cleaning task to a complex challenge. This is because we shift from random errors causing data to be missing, to the very fact that the value is missing being a signal.
+
+This change in perspective highlights a conceptual flaw with how traditional imputation (and deleting strategies for that matter) are often implemented in practice. Methodologies like MICE or regression imputation, while mathematically elegant, are inherently attempting to guess a value whose absence might actually tell us the real story. In doing so, we are risking destroying the latent signal provided by the missing data and replacing it with synthetic noise, artificially inflating our confidence in the data and fooling ourselves.
+
+Furthermore, in doing this research, I could understand the true difference between the academic "gold standard" and state-of-the-art and the industry pragmatism. While some techniques like TabDDPM represent incredible mathematical achievements in data synthesis, the exorbitant computational overhead renders them impractical for standard production environments. This pursuit of perfect data reconstruction often deviates from the original goal, the practicality of implementation into industrial pipelines. After all, what good is a theoretically perfect algorithm, if it is too computationally impractical to use?
+
+The titular question and topic of this paper is "Deletion vs Imputation" of data, and truth be told, while between the two, Imputation does come on top, due to the lack of use cases for deleting data and the enormous problems that come with it, they both come short compared to the emerging standard, Native Algorithmic Handling. This brings me to my critical opinion on this topic: the continued heavy reliance on explicit imputation (or deletion) pipelines is often a symptom of the limitations of older and legacy algorithms that demand complete matrices. The success of Native Algorithmic Handling represents the most elegant evolution in this field. By allowing the algorithm to dynamically learn the value of missing values, we eliminate the need to waste resources in predictive imputation. More importantly, we stop forcing messy, real-world data to fit the robust and inflexible assumptions of these models.
+
+In conclusion, while some fields and problems still need the old approach of deletion and imputation strategies, this traditional debate is, in many ways, becoming obsolete when it comes to predictive modeling. The future of handling missing data might not lie in finding better ways to delete missing rows or guessing the values to fill them. Instead, it might lie in building models that can understand the incompleteness and imperfection of datasets.
 
 
 \section{Acknowledgement of AI Tools}
@@ -207,6 +233,10 @@ Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous unde
 % - Describe the purpose of use
 % - Justification for tool choice
 % - Reference tracking if applicable (e.g., scite.ai, consensus.app, elicit.com)
+\subsection{Google Gemini (Gemini 3.1 Pro)}
+\noindent \textbf{Purpose of use:} Gemini was used in the theme choosing stage, to get a short briefing on all possible topics and therefore make an informed decision. Additionally, it was used in the exploratory and research phases of this project. Specifically, its "Deep Research" capabilities were used to rapidly synthesize existing literature as well as clarify difficult and complex deep learning imputation techniques and native algorithmic handling approaches. It also acted as a collaborative assistant for structural brainstorming and grammatical refinement of the final document.
+
+\noindent \textbf{Justification for tool choice:} Gemini 3.1 Pro was selected due to its advanced capabilities. The "Deep Research" feature was particularly useful for this assignment, as it excels at aggregating information across multiple technical domains and summarizing vast amounts of literature. Crucially, it provided direct references alongside its summaries, which enabled independent verification and allowed for further, in-depth investigation into the primary academic sources on my own.
 
 
 \begin{thebibliography}{00}
@@ -215,8 +245,9 @@ Multiple Imputation (MICE) & Quantifies uncertainty; statistically rigorous unde
 % \bibitem{ref1}
 % Author, ``Title,'' \textit{Journal}, vol. X, no. Y, pp. 1--10, 2020.
 
-\bibitem{placeholder}
-% Placeholder - replace with actual references
+\bibitem{impact_missing}
+A. Author, ``Impact of Missing Values in Machine Learning: A Comprehensive Analysis,'' ResearchGate, 2024. [Online]. Available: \url{https://www.researchgate.net/publication/384887087_Impact_of_Missing_Values_in_Machine_Learning_A_Comprehensive_Analysis}
+
 \end{thebibliography}
 
 \end{document}
